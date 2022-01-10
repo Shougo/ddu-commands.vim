@@ -39,7 +39,8 @@ EXAMPLES						*ddu-commands-examples*
 ==============================================================================
 COMMANDS						*ddu-commands-commands*
 
-:Ddu [{options}] {sources}				*:Ddu*
+							*:Ddu*
+:Ddu [{options}] {sources} [{source-options}] [{source-params}]
 		Creates a new Ddu buffer.
 		Ddu can be invoked with one or more sources. This can be
 		done by specifying the list on the command line, separated by
@@ -52,6 +53,21 @@ COMMANDS						*ddu-commands-commands*
 		:Ddu file file_rec
 
 		Will first list the files, then the files recursively.
+
+		Ddu can accept source options or params, after the name of
+		sources.
+		It must be "-source-option-{name}={value}"  or
+		"-source-param-{name}={value}" format.
+
+		Examples:
+
+		"Ddu file_rec -source-param-path=.":
+			the parameters of source file_rec are {"path": "."}.
+		"Ddu file file_rec -source-param-path=.":
+			the parameters of source file_rec are {"path": "."}.
+			the parameters of source file is empty.
+		"Ddu -source-param-path=. file file_rec":
+			the parameters of all sources are {"path": "."}.
 
 		See also |ddu-sources| the available sources.
 
