@@ -1,0 +1,68 @@
+*ddu-commands.txt*	Commands for ddu.vim
+
+Author: Shougo <Shougo.Matsu at gmail.com>
+License: MIT license
+
+CONTENTS						*ddu-commands-contents*
+
+Introduction		|ddu-commands-introduction|
+Install			|ddu-commands-install|
+Examples		|ddu-commands-examples|
+Commands		|ddu-commands-commands|
+
+
+==============================================================================
+INTRODUCTION					*ddu-commands-introduction*
+
+This plugin adds the commands for ddu.vim.
+
+
+==============================================================================
+INSTALL							*ddu-commands-install*
+
+Please install both "ddu.vim" and "denops.vim".
+
+https://github.com/Shougo/ddu.vim
+https://github.com/vim-denops/denops.vim
+
+
+==============================================================================
+EXAMPLES						*ddu-commands-examples*
+>
+	" Use file_rec source.
+	Ddu file_rec
+	
+	" Change input option
+	Ddu file -input=foo
+<
+
+==============================================================================
+COMMANDS						*ddu-commands-commands*
+
+:Ddu [{options}] {sources}				*:Ddu*
+		Creates a new Ddu buffer.
+		Ddu can be invoked with one or more sources. This can be
+		done by specifying the list on the command line, separated by
+		spaces. The list of candidates (the matches found in the
+		source by your filter string) will be ordered in the same
+		order that you specify the {sources}.
+
+		For example:
+
+		:Ddu file file_rec
+
+		Will first list the files, then the files recursively.
+
+		See also |ddu-sources| the available sources.
+
+		You can use evaluation cmdline by ``.
+		Note: In the evaluation, The special characters(spaces,  "\")
+		are escaped automatically.
+>
+        :Ddu -name=search%`bufnr('%')` line<CR>
+<
+		{options} are options for Ddu buffer: |ddu-options|
+
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:
