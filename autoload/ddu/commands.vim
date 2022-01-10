@@ -24,11 +24,11 @@ function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
 endfunction
 
 function! ddu#commands#call(args) abort
-  let options = s:parse_options_args(a:args)
+  let options = ddu#commands#_parse_options_args(a:args)
   call ddu#start(options)
 endfunction
 
-function! s:parse_options_args(cmdline) abort
+function! ddu#commands#_parse_options_args(cmdline) abort
   let sources = []
   let [args, options] = s:parse_options(a:cmdline)
 
@@ -68,10 +68,6 @@ function! s:parse_options(cmdline) abort
   let cmdline = (a:cmdline =~# '\\\@<!`.*\\\@<!`') ?
         \ s:eval_cmdline(a:cmdline) : a:cmdline
 
-  " Note: convert number options to string to check types
-  let defalt_options = map(ddu#custom#get_default_options(),
-        \ { _, val -> type(val) == v:t_number ? string(val) : val })
-
   for s in split(cmdline, s:re_unquoted_match('\%(\\\@<!\s\)\+'))
     let arg = substitute(s, '\\\( \)', '\1', 'g')
     let arg_key = substitute(arg, '=\zs.*$', '', '')
@@ -85,14 +81,8 @@ function! s:parse_options(cmdline) abort
             \ s:remove_quote_pairs(arg[len(arg_key) :]) : v:true
     endif
 
-    if has_key(defalt_options, name)
-      " Type check
-      if type(defalt_options[name]) != type(value)
-        call ddu#util#print_error(
-              \ printf('option "%s": type is invalid.', arg_key))
-      else
-        let options[name] = value
-      endif
+    if arg_key[0] ==# '-'
+      let options[name] = value
     else
       call add(args, arg)
     endif
