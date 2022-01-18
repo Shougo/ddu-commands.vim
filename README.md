@@ -23,4 +23,7 @@ Ddu file_rec
 
 " Change input option
 Ddu file -input=foo
+
+" Use ui param
+Ddu file -ui-param-startFilter=v:true
 ```

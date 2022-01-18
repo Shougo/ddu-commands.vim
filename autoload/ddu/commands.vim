@@ -1,5 +1,8 @@
 function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
-  let _ = ['-source-option-', '-source-param-']
+  let _ = [
+        \ '-ui-option-', '-ui-param-',
+        \ '-source-option-', '-source-param-',
+        \ ]
 
   if a:arglead =~# '^-'
     " Option names completion.
@@ -30,6 +33,8 @@ endfunction
 
 function! ddu#commands#_parse_options_args(cmdline) abort
   let sources = []
+  let ui_options = {}
+  let ui_params = {}
   let source_options = {}
   let source_params = {}
   let [args, options] = s:parse_options(a:cmdline)
@@ -40,11 +45,17 @@ function! ddu#commands#_parse_options_args(cmdline) abort
       let a = substitute(arg, '^-\w\+-\w\+-', '', '')
       let name = substitute(a, '=.*$', '', '')
       let value = s:remove_quote_pairs(a[len(name) + 1 :])
+      if value ==# 'v:true' || value ==# 'v:false'
+        " Use boolean instead
+        let value = value ==# 'v:true' ? v:true : v:false
+      endif
 
       let dest = matchstr(arg, '^-\zs\w\+\ze-')
       let option_or_param = matchstr(arg, '^-\w\+-\zs\%(option\|param\)')
 
-      if dest ==# 'source'
+      if dest ==# 'ui'
+        let ui_{option_or_param}s[name] = value
+      elseif dest ==# 'source'
         if empty(sources)
           " For global
           let source_{option_or_param}s[name] = value
@@ -65,6 +76,8 @@ function! ddu#commands#_parse_options_args(cmdline) abort
   let options.sources = sources
   let options.sourceOptions = { '_': source_options }
   let options.sourceParams = { '_': source_params }
+  let options.uiOptions = { '_': ui_options }
+  let options.uiParams = { '_': ui_params }
   return options
 endfunction
 function! s:re_unquoted_match(match) abort

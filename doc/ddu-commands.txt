@@ -34,6 +34,9 @@ EXAMPLES						*ddu-commands-examples*
 	
 	" Change input option
 	Ddu file -input=foo
+
+	" Use ui param
+	Ddu file -ui-param-startFilter=v:true
 <
 
 ==============================================================================
@@ -54,10 +57,10 @@ COMMANDS						*ddu-commands-commands*
 
 		Will first list the files, then the files recursively.
 
-		Ddu can accept source options or params, after the name of
+		Ddu can accept ui/source options or params, after the name of
 		sources.
-		It must be "-source-option-{name}={value}"  or
-		"-source-param-{name}={value}" format.
+		It must be "-{ui/source}-{name}={value}"  or
+		"-{ui/source}-param-{name}={value}" format.
 
 		Examples:
 
