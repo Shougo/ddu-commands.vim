@@ -1,26 +1,15 @@
 function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
-  let _ = [
+  if a:arglead =~# '^-'
+    " Option names completion.
+    let options = keys(filter(ddu#custom#get_default_options(),
+          \ { _, val -> type(val) == v:t_bool || type(val) == v:t_string }))
+    let _ = map(options, { _, val -> '-' . val . '=' }) + [
         \ '-ui-option-', '-ui-param-',
         \ '-source-option-', '-source-param-',
         \ ]
-
-  if a:arglead =~# '^-'
-    " Option names completion.
-    let options = ddu#custom#get_default_options()
-    let bool_options = keys(filter(copy(options),
-          \ { _, val -> type(val) == v:t_bool }))
-    let _ += map(copy(bool_options), { _, val -> '-' . tr(val, '_', '-') })
-    let string_options = keys(filter(copy(options),
-          \ { _, val -> type(val) == v:t_string }))
-    let _ += map(copy(string_options),
-          \ { _, val -> '-' . tr(val, '_', '-') . '=' })
-
-    " Add "-no-" option names completion.
-    let _ += map(copy(bool_options),
-          \ { _, val -> '-no-' . tr(val, '_', '-') })
   else
     " Source name completion.
-    let _ += s:get_available_sources()
+    let _ = s:get_available_sources()
   endif
 
   return uniq(sort(filter(_, { _, val -> stridx(val, a:arglead) == 0 })))
