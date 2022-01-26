@@ -61,6 +61,7 @@ COMMANDS						*ddu-commands-commands*
 		sources.
 		It must be "-{ui/source}-{name}={value}"  or
 		"-{ui/source}-param-{name}={value}" format.
+		Note: If you omit {value}, |v:true| is used instead.
 
 		Examples:
 
@@ -81,6 +82,8 @@ COMMANDS						*ddu-commands-commands*
         :Ddu -name=search%`bufnr('%')` line<CR>
 <
 		{options} are options for Ddu buffer: |ddu-options|
+		It must be "-{name}={value}" format.
+		Note: If you omit {value}, |v:true| is used instead.
 
 
 ==============================================================================

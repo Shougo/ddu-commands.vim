@@ -102,4 +102,29 @@ function! s:suite.parse_options_args() abort
         \   'sourceOptions': { '_': {} },
         \   'sourceParams': { '_': {} },
         \ })
+
+  " If omit value, v:true is used
+  call s:assert.equals(ddu#commands#_parse_options_args(
+        \ 'foo -resume'),
+        \ {
+        \   'sources': [
+        \     {'name': 'foo', 'options': {}, 'params': {}},
+        \   ],
+        \   'resume': v:true,
+        \   'uiOptions': { '_': {} },
+        \   'uiParams': { '_': {} },
+        \   'sourceOptions': { '_': {} },
+        \   'sourceParams': { '_': {} },
+        \ })
+  call s:assert.equals(ddu#commands#_parse_options_args(
+        \ 'foo -ui-param-foo'),
+        \ {
+        \   'sources': [
+        \     {'name': 'foo', 'options': {}, 'params': {}},
+        \   ],
+        \   'uiOptions': { '_': {} },
+        \   'uiParams': { '_': { 'foo': v:true } },
+        \   'sourceOptions': { '_': {} },
+        \   'sourceParams': { '_': {} },
+        \ })
 endfunction

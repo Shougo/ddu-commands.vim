@@ -29,11 +29,12 @@ function! ddu#commands#_parse_options_args(cmdline) abort
   let [args, options] = s:parse_options(a:cmdline)
 
   for arg in args
-    if arg =~# '^-\w\+-\%(option\|param\)-\w\+='
+    if arg =~# '^-\w\+-\%(option\|param\)-\w\+'
       " options/params
       let a = substitute(arg, '^-\w\+-\w\+-', '', '')
       let name = substitute(a, '=.*$', '', '')
-      let value = s:remove_quote_pairs(a[len(name) + 1 :])
+      let value = (a =~# '=.*$') ?
+          \ s:remove_quote_pairs(a[len(name) + 1 :]) : v:true
       if value ==# 'v:true' || value ==# 'v:false'
         " Use boolean instead
         let value = value ==# 'v:true' ? v:true : v:false
@@ -101,13 +102,8 @@ function! s:parse_options(cmdline) abort
     let arg_key = substitute(arg, '=\zs.*$', '', '')
 
     let name = substitute(tr(arg_key, '-', '_'), '=$', '', '')[1:]
-    if name =~# '^no_'
-      let name = name[3:]
-      let value = v:false
-    else
-      let value = (arg_key =~# '=$') ?
-            \ s:remove_quote_pairs(arg[len(arg_key) :]) : v:true
-    endif
+    let value = (arg_key =~# '=$') ?
+          \ s:remove_quote_pairs(arg[len(arg_key) :]) : v:true
 
     if arg_key[0] ==# '-' && arg_key !~# '-option-\|-param-'
       let options[name] = value
