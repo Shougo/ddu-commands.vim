@@ -137,8 +137,10 @@ function! s:eval_cmdline(cmdline) abort
 endfunction
 
 function! s:get_available_sources() abort
-  return filter(map(globpath(&runtimepath, 'denops/@ddu-sources/*.ts', 1, 1),
+  let sources = filter(map(globpath(&runtimepath, 'denops/@ddu-sources/*.ts', 1, 1),
         \ { _, val -> fnamemodify(val, ':t:r') }), { _, val -> val !=# '' })
+  let aliases = keys(ddu#custom#get_aliases().source)
+  return sources + aliases
 endfunction
 
 function! s:print_error(string, ...) abort
