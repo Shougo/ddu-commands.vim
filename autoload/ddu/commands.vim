@@ -63,7 +63,9 @@ function! ddu#commands#_parse_options_args(cmdline) abort
     endif
   endfor
 
-  let options.sources = sources
+  if !empty(sources)
+    let options.sources = sources
+  endif
   let options.sourceOptions = { '_': source_options }
   let options.sourceParams = { '_': source_params }
   let options.uiOptions = { '_': ui_options }
