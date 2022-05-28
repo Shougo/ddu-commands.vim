@@ -66,10 +66,19 @@ function! ddu#commands#_parse_options_args(cmdline) abort
   if !empty(sources)
     let options.sources = sources
   endif
-  let options.sourceOptions = { '_': source_options }
-  let options.sourceParams = { '_': source_params }
-  let options.uiOptions = { '_': ui_options }
-  let options.uiParams = { '_': ui_params }
+  if !empty(source_options)
+    let options.sourceOptions = { '_': source_options }
+  endif
+  if !empty(source_params)
+    let options.sourceParams = { '_': source_params }
+  endif
+  if !empty(ui_options)
+    let options.uiOptions = { '_': ui_options }
+  endif
+  if !empty(ui_params)
+    let options.uiParams = { '_': ui_params }
+  endif
+
   return options
 endfunction
 function! s:re_unquoted_match(match) abort
