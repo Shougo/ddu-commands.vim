@@ -43,6 +43,12 @@ function! ddu#commands#_parse_options_args(cmdline) abort
       let dest = matchstr(arg, '^-\zs\w\+\ze-')
       let option_or_param = matchstr(arg, '^-\w\+-\zs\%(option\|param\)')
 
+      if dest ==# 'source' && option_or_param ==# 'option'
+            \ && name ==# 'columns'
+        " Like defx.nvim
+        let value = split(value, ':')
+      endif
+
       if dest ==# 'ui'
         let ui_{option_or_param}s[name] = value
       elseif dest ==# 'source'

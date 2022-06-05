@@ -63,6 +63,9 @@ COMMANDS						*ddu-commands-commands*
 		"-{ui/source}-param-{name}={value}" format.
 		Note: If you omit {value}, |v:true| is used instead.
 
+		Note: |ddu-source-option-columns| is specified, {value} is
+		splitted by ":".
+
 		Examples:
 
 		"Ddu file_rec -source-param-path=.":
