@@ -83,6 +83,10 @@ function! ddu#commands#_parse_options_args(cmdline) abort
   endif
   if !empty(ui_params)
     let options.uiParams = { '_': ui_params }
+
+    if has_key(options, 'ui')
+      let options.uiParams[options.ui] = ui_params
+    endif
   endif
 
   return options
