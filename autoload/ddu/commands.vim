@@ -125,6 +125,10 @@ function! s:parse_options(cmdline) abort
     let name = substitute(tr(arg_key, '-', '_'), '=$', '', '')[1:]
     let value = (arg_key =~# '=$') ?
           \ s:remove_quote_pairs(arg[len(arg_key) :]) : v:true
+    if value ==# 'v:true' || value ==# 'v:false'
+      " Use boolean instead
+      let value = value ==# 'v:true' ? v:true : v:false
+    endif
 
     if arg_key[0] ==# '-' && arg_key !~# '-option-\|-param-'
       let options[name] = value
