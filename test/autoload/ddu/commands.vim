@@ -11,10 +11,6 @@ function! s:suite.parse_options_args() abort
         \     {'name': 'foo', 'options': {}, 'params': {}},
         \     {'name': 'bar', 'options': {}, 'params': {}},
         \   ],
-        \   'uiOptions': { '_': {} },
-        \   'uiParams': { '_': {} },
-        \   'sourceOptions': { '_': {} },
-        \   'sourceParams': { '_': {} },
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
         \ 'foo -input=bar'),
@@ -23,10 +19,6 @@ function! s:suite.parse_options_args() abort
         \     {'name': 'foo', 'options': {}, 'params': {}},
         \   ],
         \   'input': 'bar',
-        \   'uiOptions': { '_': {} },
-        \   'uiParams': { '_': {} },
-        \   'sourceOptions': { '_': {} },
-        \   'sourceParams': { '_': {} },
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
         \ '-source-option-path=bar foo'),
@@ -34,14 +26,11 @@ function! s:suite.parse_options_args() abort
         \   'sources': [
         \     {'name': 'foo', 'options': {}, 'params': {}},
         \   ],
-        \   'uiOptions': { '_': {} },
-        \   'uiParams': { '_': {} },
         \   'sourceOptions': {
         \     '_': {
         \       'path': 'bar',
         \     },
         \   },
-        \   'sourceParams': { '_': {} },
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
         \ 'foo -source-option-path=bar'),
@@ -49,10 +38,6 @@ function! s:suite.parse_options_args() abort
         \   'sources': [
         \     {'name': 'foo', 'options': { 'path': 'bar' }, 'params': {}},
         \   ],
-        \   'uiOptions': { '_': {} },
-        \   'uiParams': { '_': {} },
-        \   'sourceOptions': { '_': {} },
-        \   'sourceParams': { '_': {} },
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
         \ '-source-param-path=bar foo'),
@@ -60,9 +45,6 @@ function! s:suite.parse_options_args() abort
         \   'sources': [
         \     {'name': 'foo', 'options': {}, 'params': {}},
         \   ],
-        \   'uiOptions': { '_': {} },
-        \   'uiParams': { '_': {} },
-        \   'sourceOptions': { '_': {} },
         \   'sourceParams': {
         \     '_': {
         \       'path': 'bar',
@@ -75,10 +57,6 @@ function! s:suite.parse_options_args() abort
         \   'sources': [
         \     {'name': 'foo', 'options': {}, 'params': { 'path': 'bar' }},
         \   ],
-        \   'uiOptions': { '_': {} },
-        \   'uiParams': { '_': {} },
-        \   'sourceOptions': { '_': {} },
-        \   'sourceParams': { '_': {} },
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
         \ 'foo -ui-option-foo=bar'),
@@ -87,9 +65,6 @@ function! s:suite.parse_options_args() abort
         \     {'name': 'foo', 'options': {}, 'params': {}},
         \   ],
         \   'uiOptions': { '_': { 'foo': 'bar' } },
-        \   'uiParams': { '_': {} },
-        \   'sourceOptions': { '_': {} },
-        \   'sourceParams': { '_': {} },
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
         \ 'foo -ui-param-foo=bar'),
@@ -97,10 +72,7 @@ function! s:suite.parse_options_args() abort
         \   'sources': [
         \     {'name': 'foo', 'options': {}, 'params': {}},
         \   ],
-        \   'uiOptions': { '_': {} },
         \   'uiParams': { '_': { 'foo': 'bar' } },
-        \   'sourceOptions': { '_': {} },
-        \   'sourceParams': { '_': {} },
         \ })
 
   " If omit value, v:true is used
@@ -111,10 +83,6 @@ function! s:suite.parse_options_args() abort
         \     {'name': 'foo', 'options': {}, 'params': {}},
         \   ],
         \   'resume': v:true,
-        \   'uiOptions': { '_': {} },
-        \   'uiParams': { '_': {} },
-        \   'sourceOptions': { '_': {} },
-        \   'sourceParams': { '_': {} },
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
         \ 'foo -ui-param-foo'),
@@ -122,9 +90,6 @@ function! s:suite.parse_options_args() abort
         \   'sources': [
         \     {'name': 'foo', 'options': {}, 'params': {}},
         \   ],
-        \   'uiOptions': { '_': {} },
         \   'uiParams': { '_': { 'foo': v:true } },
-        \   'sourceOptions': { '_': {} },
-        \   'sourceParams': { '_': {} },
         \ })
 endfunction
