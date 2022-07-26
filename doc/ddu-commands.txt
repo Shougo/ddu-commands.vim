@@ -68,12 +68,12 @@ COMMANDS						*ddu-commands-commands*
 
 		Examples:
 
-		"Ddu file_rec -source-param-path=.":
+		"Ddu file_rec -source-option-path=.":
 			the parameters of source file_rec are {"path": "."}.
-		"Ddu file file_rec -source-param-path=.":
+		"Ddu file file_rec -source-option-path=.":
 			the parameters of source file_rec are {"path": "."}.
 			the parameters of source file is empty.
-		"Ddu -source-param-path=. file file_rec":
+		"Ddu -source-option-path=. file file_rec":
 			the parameters of all sources are {"path": "."}.
 
 		See also |ddu-sources| the available sources.
