@@ -4,8 +4,8 @@ function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
     let options = keys(filter(ddu#custom#get_default_options(),
           \ { _, val -> type(val) == v:t_bool || type(val) == v:t_string }))
     let _ = map(options, { _, val -> '-' . val . '=' }) + [
-        \ '-ui-option-', '-ui-param-',
-        \ '-source-option-', '-source-param-',
+        \   '-ui-option-', '-ui-param-',
+        \   '-source-option-', '-source-param-',
         \ ]
   else
     " Source name completion.
@@ -65,7 +65,7 @@ function! ddu#commands#_parse_options_args(cmdline) abort
     else
       " Add source name.
       let source_name = matchstr(arg, '^[^:]*')
-      call add(sources, { 'name': source_name, 'options': {}, 'params': {} })
+      call add(sources, #{ name: source_name, options: {}, params: {} })
     endif
   endfor
 
@@ -73,16 +73,16 @@ function! ddu#commands#_parse_options_args(cmdline) abort
     let options.sources = sources
   endif
   if !empty(source_options)
-    let options.sourceOptions = { '_': source_options }
+    let options.sourceOptions = #{ _: source_options }
   endif
   if !empty(source_params)
-    let options.sourceParams = { '_': source_params }
+    let options.sourceParams = #{ _: source_params }
   endif
   if !empty(ui_options)
-    let options.uiOptions = { '_': ui_options }
+    let options.uiOptions = #{ _: ui_options }
   endif
   if !empty(ui_params)
-    let options.uiParams = { '_': ui_params }
+    let options.uiParams = #{ _: ui_params }
 
     if has_key(options, 'ui')
       let options.uiParams[options.ui] = ui_params
@@ -162,8 +162,10 @@ function! s:eval_cmdline(cmdline) abort
 endfunction
 
 function! s:get_available_sources() abort
-  let sources = filter(map(globpath(&runtimepath, 'denops/@ddu-sources/*.ts', 1, 1),
-        \ { _, val -> fnamemodify(val, ':t:r') }), { _, val -> val !=# '' })
+  let sources = filter(map(
+        \ globpath(&runtimepath, 'denops/@ddu-sources/*.ts', 1, 1),
+        \ { _, val -> fnamemodify(val, ':t:r') }),
+        \ { _, val -> val !=# '' })
   let aliases = keys(ddu#custom#get_aliases().source)
   return sources + aliases
 endfunction
