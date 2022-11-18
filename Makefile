@@ -10,9 +10,4 @@ test:
 install:
 	git clone https://github.com/thinca/vim-themis vim-themis
 
-lint:
-	vint --version
-	vint plugin
-	vint autoload
-
-.PHONY: install lint test
+.PHONY: install test
