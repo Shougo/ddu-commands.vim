@@ -170,10 +170,9 @@ function! s:get_available_sources() abort
   return sources + aliases
 endfunction
 
-function! s:print_error(string, ...) abort
-  let name = a:0 ? a:1 : 'ddu'
+function! s:print_error(string, name = 'ddu') abort
   echohl Error
-  echomsg printf('[%s] %s', name,
+  echomsg printf('[%s] %s', a:name,
         \ type(a:string) ==# v:t_string ? a:string : string(a:string))
   echohl None
 endfunction
