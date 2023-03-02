@@ -1,9 +1,10 @@
 function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
   if a:arglead =~# '^-'
     " Option names completion.
-    let options = keys(filter(ddu#custom#get_default_options(),
-          \ { _, val -> type(val) == v:t_bool || type(val) == v:t_string }))
-    let _ = map(options, { _, val -> '-' . val . '=' }) + [
+    let options = ddu#custom#get_default_options()->filter(
+          \ { _, val -> val->type() == v:t_bool
+          \   || val->type() == v:t_string })->keys()
+    let _ = options->map({ _, val -> '-' . val . '=' }) + [
         \   '-ui-option-', '-ui-param-',
         \   '-source-option-', '-source-param-',
         \ ]
@@ -12,7 +13,7 @@ function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
     let _ = s:get_available_sources()
   endif
 
-  return uniq(sort(filter(_, { _, val -> stridx(val, a:arglead) == 0 })))
+  return _->filter({ _, val -> val->stridx(a:arglead) == 0 })->sort()->uniq()
 endfunction
 
 function! ddu#commands#call(args) abort
@@ -31,28 +32,28 @@ function! ddu#commands#_parse_options_args(cmdline) abort
   for arg in args
     if arg =~# '^-\w\+-\%(option\|param\)-\w\+'
       " options/params
-      let a = substitute(arg, '^-\w\+-\w\+-', '', '')
-      let name = substitute(a, '=.*$', '', '')
+      let a = arg->substitute('^-\w\+-\w\+-', '', '')
+      let name = a->substitute('=.*$', '', '')
       let value = (a =~# '=.*$') ?
-          \ s:remove_quote_pairs(a[len(name) + 1 :]) : v:true
+          \ s:remove_quote_pairs(a[name->len() + 1 :]) : v:true
       if value ==# 'v:true' || value ==# 'v:false'
         " Use boolean instead
         let value = value ==# 'v:true' ? v:true : v:false
       endif
 
-      let dest = matchstr(arg, '^-\zs\w\+\ze-')
-      let option_or_param = matchstr(arg, '^-\w\+-\zs\%(option\|param\)')
+      let dest = arg->matchstr('^-\zs\w\+\ze-')
+      let option_or_param = arg->matchstr('^-\w\+-\zs\%(option\|param\)')
 
       if dest ==# 'source' && option_or_param ==# 'option'
             \ && name ==# 'columns'
         " Like defx.nvim
-        let value = split(value, ':')
+        let value = value->split(':')
       endif
 
       if dest ==# 'ui'
         let ui_{option_or_param}s[name] = value
       elseif dest ==# 'source'
-        if empty(sources)
+        if sources->empty()
           " For global
           let source_{option_or_param}s[name] = value
         else
@@ -64,27 +65,27 @@ function! ddu#commands#_parse_options_args(cmdline) abort
       call s:print_error(printf('option "%s": is invalid.', arg))
     else
       " Add source name.
-      let source_name = matchstr(arg, '^[^:]*')
+      let source_name = arg->matchstr('^[^:]*')
       call add(sources, #{ name: source_name, options: {}, params: {} })
     endif
   endfor
 
-  if !empty(sources)
+  if !(sources->empty())
     let options.sources = sources
   endif
-  if !empty(source_options)
+  if !(source_options->empty())
     let options.sourceOptions = #{ _: source_options }
   endif
-  if !empty(source_params)
+  if !(source_params->empty())
     let options.sourceParams = #{ _: source_params }
   endif
-  if !empty(ui_options)
+  if !(ui_options->empty())
     let options.uiOptions = #{ _: ui_options }
   endif
-  if !empty(ui_params)
+  if !(ui_params->empty())
     let options.uiParams = #{ _: ui_params }
 
-    if has_key(options, 'ui')
+    if options->has_key('ui')
       let options.uiParams[options.ui] = ui_params
     endif
   endif
@@ -106,7 +107,7 @@ function! s:remove_quote_pairs(s) abort
   elseif s[0] ==# "'" && s[len(s) - 1] ==# "'"
     let s = s[1: len(s) - 2]
   else
-    let s = substitute(a:s, '\\\(.\)', "\\1", 'g')
+    let s = a:s->substitute('\\\(.\)', "\\1", 'g')
   endif
   return s
 endfunction
@@ -118,13 +119,13 @@ function! s:parse_options(cmdline) abort
   let cmdline = (a:cmdline =~# '\\\@<!`.*\\\@<!`') ?
         \ s:eval_cmdline(a:cmdline) : a:cmdline
 
-  for s in split(cmdline, s:re_unquoted_match('\%(\\\@<!\s\)\+'))
-    let arg = substitute(s, '\\\( \)', '\1', 'g')
-    let arg_key = substitute(arg, '=\zs.*$', '', '')
+  for s in cmdline->split(s:re_unquoted_match('\%(\\\@<!\s\)\+'))
+    let arg = s->substitute('\\\( \)', '\1', 'g')
+    let arg_key = arg->substitute('=\zs.*$', '', '')
 
-    let name = substitute(tr(arg_key, '-', '_'), '=$', '', '')[1:]
+    let name = arg_key->tr('-', '_')->substitute('=$', '', '')[1:]
     let value = (arg_key =~# '=$') ?
-          \ s:remove_quote_pairs(arg[len(arg_key) :]) : v:true
+          \ s:remove_quote_pairs(arg[arg_key->len() :]) : v:true
     if value ==# 'v:true' || value ==# 'v:false'
       " Use boolean instead
       let value = value ==# 'v:true' ? v:true : v:false
@@ -142,17 +143,17 @@ endfunction
 function! s:eval_cmdline(cmdline) abort
   let cmdline = ''
   let prev_match = 0
-  let eval_pos = match(a:cmdline, '\\\@<!`.\{-}\\\@<!`')
+  let eval_pos = a:cmdline->match('\\\@<!`.\{-}\\\@<!`')
   while eval_pos >= 0
     if eval_pos - prev_match > 0
       let cmdline .= a:cmdline[prev_match : eval_pos - 1]
     endif
-    let prev_match = matchend(a:cmdline,
+    let prev_match = a:cmdline->matchend(
           \ '\\\@<!`.\{-}\\\@<!`', eval_pos)
-    silent! let cmdline .= escape(
-          \ eval(a:cmdline[eval_pos+1 : prev_match - 2]), '\ ')
+    silent! let cmdline .= a:cmdline[eval_pos+1 : prev_match - 2]->eval(
+          \ )->escape('\ ')
 
-    let eval_pos = match(a:cmdline, '\\\@<!`.\{-}\\\@<!`', prev_match)
+    let eval_pos = a:cmdline->match('\\\@<!`.\{-}\\\@<!`', prev_match)
   endwhile
   if prev_match >= 0
     let cmdline .= a:cmdline[prev_match :]
@@ -162,17 +163,17 @@ function! s:eval_cmdline(cmdline) abort
 endfunction
 
 function! s:get_available_sources() abort
-  let sources = filter(map(
-        \ globpath(&runtimepath, 'denops/@ddu-sources/*.ts', 1, 1),
-        \ { _, val -> fnamemodify(val, ':t:r') }),
+  let sources = &runtimepath->globpath(
+        \ 'denops/@ddu-sources/*.ts', 1, 1)->map(
+        \ { _, val -> fnamemodify(val, ':t:r') })->filter(
         \ { _, val -> val !=# '' })
-  let aliases = keys(ddu#custom#get_aliases().source)
+  let aliases = ddu#custom#get_aliases().source->keys()
   return sources + aliases
 endfunction
 
 function! s:print_error(string, name = 'ddu') abort
   echohl Error
   echomsg printf('[%s] %s', a:name,
-        \ type(a:string) ==# v:t_string ? a:string : string(a:string))
+        \ a:string->type() ==# v:t_string ? a:string : a:string->string())
   echohl None
 endfunction

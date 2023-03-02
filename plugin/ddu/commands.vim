@@ -1,4 +1,4 @@
-if exists('g:loaded_ddu_commands')
+if 'g:loaded_ddu_commands'->exists()
   finish
 endif
 let g:loaded_ddu_commands = 1
