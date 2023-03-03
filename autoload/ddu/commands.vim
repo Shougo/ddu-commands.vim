@@ -150,8 +150,8 @@ function! s:eval_cmdline(cmdline) abort
     endif
     let prev_match = a:cmdline->matchend(
           \ '\\\@<!`.\{-}\\\@<!`', eval_pos)
-    silent! let cmdline .= a:cmdline[eval_pos+1 : prev_match - 2]->eval(
-          \ )->escape('\ ')
+    silent! let cmdline .= a:cmdline[eval_pos+1 : prev_match - 2]
+          \ ->eval()->escape('\ ')
 
     let eval_pos = a:cmdline->match('\\\@<!`.\{-}\\\@<!`', prev_match)
   endwhile
@@ -163,10 +163,10 @@ function! s:eval_cmdline(cmdline) abort
 endfunction
 
 function! s:get_available_sources() abort
-  let sources = &runtimepath->globpath(
-        \ 'denops/@ddu-sources/*.ts', 1, 1)->map(
-        \ { _, val -> fnamemodify(val, ':t:r') })->filter(
-        \ { _, val -> val !=# '' })
+  let sources = 'denops/@ddu-sources/*.ts'
+        \ ->globpath(&runtimepath, 1, 1)
+        \ ->map({ _, val -> fnamemodify(val, ':t:r') })
+        \ ->filter({ _, val -> val !=# '' })
   let aliases = ddu#custom#get_aliases().source->keys()
   return sources + aliases
 endfunction
