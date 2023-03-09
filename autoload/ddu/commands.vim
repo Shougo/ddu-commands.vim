@@ -4,7 +4,7 @@ function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
     let options = ddu#custom#get_default_options()->filter(
           \ { _, val -> val->type() == v:t_bool
           \   || val->type() == v:t_string })->keys()
-    let _ = options->map({ _, val -> '-' . val . '=' }) + [
+    let _ = options->map({ _, val -> '-' .. val .. '=' }) + [
         \   '-ui-option-', '-ui-param-',
         \   '-source-option-', '-source-param-',
         \ ]
@@ -58,7 +58,7 @@ function! ddu#commands#_parse_options_args(cmdline) abort
           let source_{option_or_param}s[name] = value
         else
           " For source local
-          let sources[-1][option_or_param . 's'][name] = value
+          let sources[-1][option_or_param .. 's'][name] = value
         endif
       endif
     elseif arg[0] ==# '-'
@@ -95,9 +95,9 @@ endfunction
 function! s:re_unquoted_match(match) abort
   " Don't match a:match if it is located in-between unescaped single or double
   " quotes
-  return a:match . '\v\ze([^"' . "'" . '\\]*(\\.|"([^"\\]*\\.)*[^"\\]*"|'
-        \ . "'" . '([^' . "'" . '\\]*\\.)*[^' . "'" . '\\]*' . "'" . '))*[^"'
-        \ . "'" . ']*$'
+  return a:match .. '\v\ze([^"' .. "'" .. '\\]*(\\.|"([^"\\]*\\.)*[^"\\]*"|'
+        \ .. "'" .. '([^' .. "'" .. '\\]*\\.)*[^' .. "'" .. '\\]*' .. "'"
+        \ .. '))*[^"' .. "'" .. ']*$'
 endfunction
 function! s:remove_quote_pairs(s) abort
   " remove leading/ending quote pairs
