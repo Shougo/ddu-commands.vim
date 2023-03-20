@@ -1,24 +1,23 @@
 function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
   if a:arglead =~# '^-'
     " Option names completion.
-    let options = ddu#custom#get_default_options()->filter(
+    const options = ddu#custom#get_default_options()->filter(
           \ { _, val -> val->type() == v:t_bool
           \   || val->type() == v:t_string })->keys()
-    let _ = options->map({ _, val -> '-' .. val .. '=' }) + [
+    const _ = options->map({ _, val -> '-' .. val .. '=' }) + [
         \   '-ui-option-', '-ui-param-',
         \   '-source-option-', '-source-param-',
         \ ]
   else
     " Source name completion.
-    let _ = s:get_available_sources()
+    const _ = s:get_available_sources()
   endif
 
   return _->filter({ _, val -> val->stridx(a:arglead) == 0 })->sort()->uniq()
 endfunction
 
 function! ddu#commands#call(args) abort
-  let options = ddu#commands#_parse_options_args(a:args)
-  call ddu#start(options)
+  call ddu#start(ddu#commands#_parse_options_args(a:args))
 endfunction
 
 function! ddu#commands#_parse_options_args(cmdline) abort
@@ -116,7 +115,7 @@ function! s:parse_options(cmdline) abort
   let options = {}
 
   " Eval
-  let cmdline = (a:cmdline =~# '\\\@<!`.*\\\@<!`') ?
+  const cmdline = (a:cmdline =~# '\\\@<!`.*\\\@<!`') ?
         \ s:eval_cmdline(a:cmdline) : a:cmdline
 
   for s in cmdline->split(s:re_unquoted_match('\%(\\\@<!\s\)\+'))
@@ -163,11 +162,11 @@ function! s:eval_cmdline(cmdline) abort
 endfunction
 
 function! s:get_available_sources() abort
-  let sources = 'denops/@ddu-sources/*.ts'
+  const sources = 'denops/@ddu-sources/*.ts'
         \ ->globpath(&runtimepath, 1, 1)
         \ ->map({ _, val -> fnamemodify(val, ':t:r') })
         \ ->filter({ _, val -> val !=# '' })
-  let aliases = ddu#custom#get_aliases().source->keys()
+  const aliases = ddu#custom#get_aliases().source->keys()
   return sources + aliases
 endfunction
 
