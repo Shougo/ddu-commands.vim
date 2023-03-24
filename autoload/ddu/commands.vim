@@ -4,13 +4,13 @@ function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
     const options = ddu#custom#get_default_options()->filter(
           \ { _, val -> val->type() == v:t_bool
           \   || val->type() == v:t_string })->keys()
-    const _ = options->map({ _, val -> '-' .. val .. '=' }) + [
+    let _ = options->map({ _, val -> '-' .. val .. '=' }) + [
         \   '-ui-option-', '-ui-param-',
         \   '-source-option-', '-source-param-',
         \ ]
   else
     " Source name completion.
-    const _ = s:get_available_sources()
+    let _ = s:get_available_sources()
   endif
 
   return _->filter({ _, val -> val->stridx(a:arglead) == 0 })->sort()->uniq()
