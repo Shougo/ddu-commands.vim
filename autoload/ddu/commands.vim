@@ -1,7 +1,7 @@
 function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
   if a:arglead =~# '^-'
     " Option names completion.
-    const options = ddu#custom#get_default_options()->filter(
+    let options = ddu#custom#get_default_options()->filter(
           \ { _, val -> val->type() == v:t_bool
           \   || val->type() == v:t_string })->keys()
     let _ = options->map({ _, val -> '-' .. val .. '=' }) + [
