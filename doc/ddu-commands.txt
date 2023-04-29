@@ -47,9 +47,9 @@ COMMANDS						*ddu-commands-commands*
 		Creates a new Ddu buffer.
 		Ddu can be invoked with one or more sources. This can be
 		done by specifying the list on the command line, separated by
-		spaces. The list of candidates (the matches found in the
-		source by your filter string) will be ordered in the same
-		order that you specify the {sources}.
+		spaces. The list of items (the matches found in the source by
+		your filter string) will be ordered in the same order that you
+		specify the {sources}.
 
 		For example:
 
