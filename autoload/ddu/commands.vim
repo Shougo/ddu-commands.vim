@@ -1,13 +1,25 @@
 function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
   if a:arglead =~# '^-'
     " Option names completion.
-    let options = ddu#custom#get_default_options()->filter(
-          \ { _, val -> val->type() == v:t_bool
-          \   || val->type() == v:t_string })->keys()
-    let _ = options->map({ _, val -> '-' .. val .. '=' }) + [
-        \   '-ui-option-', '-ui-param-',
-        \   '-source-option-', '-source-param-',
-        \ ]
+    let default_options = ddu#custom#get_default_options()
+    let _ = []
+
+    let _ = default_options->copy()->filter(
+          \ { _, val -> val->type() == v:t_bool || val->type() == v:t_string })
+          \ ->map({ key, val -> '-' .. key
+          \        .. (val->type() == v:t_bool ? '' : '=') })
+          \ ->values()
+
+    for prefix in ['action', 'column', 'filter', 'kind', 'source', 'ui']
+      let _ += default_options[prefix .. 'Options']->copy()
+            \ ->filter(
+            \ { _, val -> val->type() == v:t_bool || val->type() == v:t_string })
+            \ ->map({ key, val -> '-' .. prefix .. '-option-' .. key
+            \        .. (val->type() == v:t_bool ? '' : '=') })
+            \ ->values()
+      let _ += ['-' .. prefix .. '-option-', '-' .. prefix .. '-param-']
+    endfor
+    echomsg _
   else
     " Source name completion.
     let _ = s:get_available_sources()
