@@ -19,7 +19,6 @@ function! ddu#commands#complete(arglead, cmdline, cursorpos) abort
             \ ->values()
       let _ += ['-' .. prefix .. '-option-', '-' .. prefix .. '-param-']
     endfor
-    echomsg _
   else
     " Source name completion.
     let _ = s:get_available_sources()
