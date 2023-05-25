@@ -160,8 +160,7 @@ function! s:eval_cmdline(cmdline) abort
     endif
     let prev_match = a:cmdline->matchend(
           \ '\\\@<!`.\{-}\\\@<!`', eval_pos)
-    silent! let cmdline .= a:cmdline[eval_pos+1 : prev_match - 2]
-          \ ->eval()->escape('\ ')
+    silent! let cmdline .= a:cmdline[eval_pos+1 : prev_match - 2]->eval()
 
     let eval_pos = a:cmdline->match('\\\@<!`.\{-}\\\@<!`', prev_match)
   endwhile
