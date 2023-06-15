@@ -3,7 +3,7 @@
 const s:suite = themis#suite('parse')
 const s:assert = themis#helper('assert')
 
-function! s:suite.parse_options_args() abort
+function s:suite.parse_options_args() abort
   call s:assert.equals(ddu#commands#_parse_options_args(
         \ 'foo bar'),
         \ #{
