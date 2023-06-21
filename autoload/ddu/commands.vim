@@ -172,12 +172,14 @@ function s:eval_cmdline(cmdline) abort
 endfunction
 
 function s:get_available_sources() abort
+  " NOTE: ddu#custom#get_source_names() is for already loaded sources
   const sources = 'denops/@ddu-sources/*.ts'
         \ ->globpath(&runtimepath, 1, 1)
         \ ->map({ _, val -> fnamemodify(val, ':t:r') })
         \ ->filter({ _, val -> val !=# '' })
-  const aliases = ddu#custom#get_aliases().source->keys()
-  return sources + aliases
+        \ + ddu#custom#get_source_names()
+  const aliases = ddu#custom#get_alias_names('source')
+  return (sources + aliases)->sort()->uniq()
 endfunction
 
 function s:print_error(string, name = 'ddu') abort
