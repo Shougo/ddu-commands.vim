@@ -1,7 +1,7 @@
 function ddu#commands#complete(arglead, cmdline, cursorpos) abort
   if a:arglead =~# '^-'
     " Option names completion.
-    let default_options = ddu#custom#get_default_options()
+    const default_options = ddu#custom#get_default_options()
     let _ = []
 
     let _ = default_options->copy()->filter(
@@ -32,6 +32,8 @@ function ddu#commands#call(args) abort
 endfunction
 
 function ddu#commands#_parse_options_args(cmdline) abort
+  const default_options = ddu#custom#get_default_options()
+
   let sources = []
   let ui_options = {}
   let ui_params = {}
@@ -46,10 +48,6 @@ function ddu#commands#_parse_options_args(cmdline) abort
       let name = a->substitute('=.*$', '', '')
       let value = (a =~# '=.*$') ?
           \ s:remove_quote_pairs(a[name->len() + 1 :]) : v:true
-      if value ==# 'v:true' || value ==# 'v:false'
-        " Use boolean instead
-        let value = value ==# 'v:true' ? v:true : v:false
-      endif
 
       let dest = arg->matchstr('^-\zs\w\+\ze-')
       let option_or_param = arg->matchstr('^-\w\+-\zs\%(option\|param\)')
@@ -59,6 +57,9 @@ function ddu#commands#_parse_options_args(cmdline) abort
         " Like defx.nvim
         let value = value->split(':')
       endif
+
+      let value = s:convert_option_or_param(
+            \ default_options, dest, option_or_param, name, value)
 
       if dest ==# 'ui'
         let ui_{option_or_param}s[name] = value
@@ -102,6 +103,22 @@ function ddu#commands#_parse_options_args(cmdline) abort
 
   return options
 endfunction
+function s:convert_option_or_param(
+      \ default_options, dest, option_or_param,
+      \ name, value) abort
+  const key = a:dest ..
+        \ (a:option_or_param ==# 'option' ? 'Options' : 'Params')
+  const default = a:default_options->get(key, {})->get(a:name, v:false)
+  if default->type() == v:t_bool
+        \ && (a:value ==# 'v:true' || a:value ==# 'v:false')
+    " Use boolean instead
+    let value = a:value ==# 'v:true' ? v:true : v:false
+  else
+    let value = a:value
+  endif
+
+  return value
+endfunction
 function s:re_unquoted_match(match) abort
   " Don't match a:match if it is located in-between unescaped single or double
   " quotes
@@ -125,6 +142,8 @@ function s:parse_options(cmdline) abort
   let args = []
   let options = {}
 
+  const default_options = ddu#custom#get_default_options()
+
   " Eval
   const cmdline = (a:cmdline =~# '\\\@<!`.*\\\@<!`') ?
         \ s:eval_cmdline(a:cmdline) : a:cmdline
@@ -133,15 +152,16 @@ function s:parse_options(cmdline) abort
     let arg = s->substitute('\\\( \)', '\1', 'g')
     let arg_key = arg->substitute('=\zs.*$', '', '')
 
-    let name = arg_key->tr('-', '_')->substitute('=$', '', '')[1:]
-    let value = (arg_key =~# '=$') ?
-          \ s:remove_quote_pairs(arg[arg_key->len() :]) : v:true
-    if value ==# 'v:true' || value ==# 'v:false'
-      " Use boolean instead
-      let value = value ==# 'v:true' ? v:true : v:false
-    endif
-
     if arg_key[0] ==# '-' && arg_key !~# '-option-\|-param-'
+      let name = arg_key->tr('-', '_')->substitute('=$', '', '')[1:]
+      let value = (arg_key =~# '=$') ?
+            \ s:remove_quote_pairs(arg[arg_key->len() :]) : v:true
+      if default_options->get(name, '')->type() == v:t_bool
+            \ && (value ==# 'v:true' || value ==# 'v:false')
+        " Use boolean instead
+        let value = value ==# 'v:true' ? v:true : v:false
+      endif
+
       let options[name] = value
     else
       call add(args, arg)
