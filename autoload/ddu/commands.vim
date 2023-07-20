@@ -109,7 +109,8 @@ function s:convert_option_or_param(
   const key = a:dest ..
         \ (a:option_or_param ==# 'option' ? 'Options' : 'Params')
   const default = a:default_options->get(key, {})->get(a:name, v:false)
-  if default->type() == v:t_bool
+  if default->type() ==# v:t_bool
+        \ && type(a:value) ==# v:t_string
         \ && (a:value ==# 'v:true' || a:value ==# 'v:false')
     " Use boolean instead
     let value = a:value ==# 'v:true' ? v:true : v:false
@@ -157,6 +158,7 @@ function s:parse_options(cmdline) abort
       let value = (arg_key =~# '=$') ?
             \ s:remove_quote_pairs(arg[arg_key->len() :]) : v:true
       if default_options->get(name, '')->type() == v:t_bool
+            \ && type(value) ==# v:t_string
             \ && (value ==# 'v:true' || value ==# 'v:false')
         " Use boolean instead
         let value = value ==# 'v:true' ? v:true : v:false
