@@ -34,13 +34,14 @@ endfunction
 function ddu#commands#_parse_options_args(cmdline) abort
   const default_options = ddu#custom#get_default_options()
 
+  const types = ['ui', 'source', 'filter', 'column', 'action']
+
+  for name in types
+    let {name}_options = {}
+    let {name}_params = {}
+  endfor
+
   let sources = []
-  let ui_options = {}
-  let ui_params = {}
-  let source_options = {}
-  let source_params = {}
-  let filter_options = {}
-  let filter_params = {}
   let [args, options] = s:parse_options(a:cmdline)
 
   for arg in args
@@ -63,9 +64,7 @@ function ddu#commands#_parse_options_args(cmdline) abort
       let value = s:convert_option_or_param(
             \ default_options, dest, option_or_param, name, value)
 
-      if dest ==# 'ui' || dest ==# 'filter'
-        let {dest}_{option_or_param}s[name] = value
-      elseif dest ==# 'source'
+      if dest ==# 'source'
         if sources->empty()
           " For global
           let source_{option_or_param}s[name] = value
@@ -73,6 +72,8 @@ function ddu#commands#_parse_options_args(cmdline) abort
           " For source local
           let sources[-1][option_or_param .. 's'][name] = value
         endif
+      else
+        let {dest}_{option_or_param}s[name] = value
       endif
     elseif arg[0] ==# '-'
       call s:print_error(printf('option "%s": is invalid.', arg))
@@ -87,7 +88,7 @@ function ddu#commands#_parse_options_args(cmdline) abort
     let options.sources = sources
   endif
 
-  for name in ['ui', 'source', 'filter']
+  for name in types
     if !({name}_options->empty())
       let options[name .. 'Options'] = #{ _: {name}_options }
     endif

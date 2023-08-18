@@ -3,7 +3,7 @@
 Author: Shougo <Shougo.Matsu at gmail.com>
 License: MIT license
 
-CONTENTS						*ddu-commands-contents*
+CONTENTS                                               *ddu-commands-contents*
 
 Introduction		|ddu-commands-introduction|
 Install			|ddu-commands-install|
@@ -12,13 +12,13 @@ Commands		|ddu-commands-commands|
 
 
 ==============================================================================
-INTRODUCTION					*ddu-commands-introduction*
+INTRODUCTION                                       *ddu-commands-introduction*
 
 This plugin adds the commands for ddu.vim.
 
 
 ==============================================================================
-INSTALL							*ddu-commands-install*
+INSTALL                                                 *ddu-commands-install*
 
 Please install both "ddu.vim" and "denops.vim".
 
@@ -27,7 +27,7 @@ https://github.com/vim-denops/denops.vim
 
 
 ==============================================================================
-EXAMPLES						*ddu-commands-examples*
+EXAMPLES                                               *ddu-commands-examples*
 >
 	" Use file_rec source.
 	Ddu file_rec
@@ -40,10 +40,10 @@ EXAMPLES						*ddu-commands-examples*
 <
 
 ==============================================================================
-COMMANDS						*ddu-commands-commands*
+COMMANDS                                               *ddu-commands-commands*
 
 							*:Ddu*
-:Ddu [{options}] {sources} [{source-options}] [{source-params}]
+:Ddu [{options}] {sources} [{type-options}] [{type-params}]
 		Creates a new Ddu buffer.
 		Ddu can be invoked with one or more sources. This can be
 		done by specifying the list on the command line, separated by
@@ -57,10 +57,11 @@ COMMANDS						*ddu-commands-commands*
 
 		Will first list the files, then the files recursively.
 
-		Ddu can accept ui/source options or params, after the name of
+		Ddu can accept type options or params, after the name of
 		sources.
-		It must be "-{ui/source}-{name}={value}"  or
-		"-{ui/source}-param-{name}={value}" format.
+		It must be "-{type}-option-{name}={value}"  or
+		"-{type}-param-{name}={value}" format.
+		{type} is "ui", "source", "filter", "column" or "action".
 		Note: If you omit {value}, |v:true| is used instead.
 
 		Note: |ddu-source-option-columns| is specified, {value} is
