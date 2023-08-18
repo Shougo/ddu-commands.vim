@@ -36,7 +36,7 @@ EXAMPLES                                               *ddu-commands-examples*
 	Ddu file -input=foo
 
 	" Use ui param
-	Ddu file -ui-param-startFilter=v:true
+	Ddu file -ui-param-ff-startFilter=v:true
 <
 
 ==============================================================================
@@ -59,9 +59,10 @@ COMMANDS                                               *ddu-commands-commands*
 
 		Ddu can accept type options or params, after the name of
 		sources.
-		It must be "-{type}-option-{name}={value}"  or
-		"-{type}-param-{name}={value}" format.
+		It must be "-{type}-option-{typename}-{name}={value}"  or
+		"-{type}-param-{typename}-{name}={value}" format.
 		{type} is "ui", "source", "filter", "column" or "action".
+		{typename} is {type}'s name.
 		Note: If you omit {value}, |v:true| is used instead.
 
 		Note: |ddu-source-option-columns| is specified, {value} is
@@ -69,12 +70,12 @@ COMMANDS                                               *ddu-commands-commands*
 
 		Examples:
 
-		"Ddu file_rec -source-option-path=.":
+		"Ddu file_rec -source-option-file_rec-path=.":
 			the parameters of source file_rec are {"path": "."}.
-		"Ddu file file_rec -source-option-path=.":
+		"Ddu file file_rec -source-option-file_rec-path=.":
 			the parameters of source file_rec are {"path": "."}.
 			the parameters of source file is empty.
-		"Ddu -source-option-path=. file file_rec":
+		"Ddu -source-option-_-path=. file file_rec":
 			the parameters of all sources are {"path": "."}.
 
 		See also |ddu-sources| the available sources.

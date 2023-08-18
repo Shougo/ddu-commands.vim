@@ -45,37 +45,39 @@ function ddu#commands#_parse_options_args(cmdline) abort
   let [args, options] = s:parse_options(a:cmdline)
 
   for arg in args
-    let matches = arg->matchlist('^-\(\w\+\)-\(option\|param\)-\(\w\+\)')
+    let matches = arg->matchlist(
+          \ '^-\(\w\+\)-\(option\|param\)-\(\w\+\)-\(\w\+\)\%(=\?\(.*\)\)\?')
     if !(matches->empty())
       " options/params
-      let a = arg->substitute('^-\w\+-\w\+-', '', '')
-      let name = matches[3]
-      let value = (a =~# '=.*$') ?
-          \ s:remove_quote_pairs(a[name->len() + 1 :]) : v:true
-
-      let dest = matches[1]
+      let type = matches[1]
       let option_or_param = matches[2]
+      let type_name = matches[3]
+      let name = matches[4]
 
-      if dest ==# 'source' && option_or_param ==# 'option'
+      let a = arg->substitute('^-\w\+-\w\+-', '', '')
+      let value = (a =~# '=.*$') ? matches[5] : v:true
+
+      if type ==# 'source'
+            \ && option_or_param ==# 'option'
             \ && name ==# 'columns'
         " Like defx.nvim
         let value = value->split(':')
       endif
 
       let value = s:convert_option_or_param(
-            \ default_options, dest, option_or_param, name, value)
+            \ default_options, type, option_or_param, name, value)
 
-      if dest ==# 'source'
-        if sources->empty()
-          " For global
-          let source_{option_or_param}s[name] = value
-        else
-          " For source local
-          let sources[-1][option_or_param .. 's'][name] = value
-        endif
+      if type ==# 'source' && !(sources->empty())
+        " For source local
+        let dest_option = {type}s[-1][option_or_param .. 's']
       else
-        let {dest}_{option_or_param}s[name] = value
+        if !(has_key({type}_{option_or_param}s, type_name))
+          let {type}_{option_or_param}s[type_name] = {}
+        endif
+        let dest_option = {type}_{option_or_param}s[type_name]
       endif
+
+      let dest_option[name] = value
     elseif arg[0] ==# '-'
       call s:print_error(printf('option "%s": is invalid.', arg))
     else
@@ -91,14 +93,10 @@ function ddu#commands#_parse_options_args(cmdline) abort
 
   for name in types
     if !({name}_options->empty())
-      let options[name .. 'Options'] = #{ _: {name}_options }
+      let options[name .. 'Options'] = {name}_options
     endif
     if !({name}_params->empty())
-      let options[name .. 'Params'] = #{ _: {name}_params }
-
-      if name ==# 'ui' && options->has_key('ui')
-        let options.uiParams[options.ui] = ui_params
-      endif
+      let options[name .. 'Params'] = {name}_params
     endif
   endfor
 

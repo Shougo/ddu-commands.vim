@@ -25,5 +25,5 @@ Ddu file_rec
 Ddu file -input=foo
 
 " Use ui param
-Ddu file -ui-param-startFilter=v:true
+Ddu file -ui-param-ff-startFilter=v:true
 ```

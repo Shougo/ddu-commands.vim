@@ -21,58 +21,58 @@ function s:suite.parse_options_args() abort
         \   input: 'bar',
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
-        \ '-source-option-path=bar foo'),
+        \ '-source-option-foo-path=bar foo'),
         \ #{
         \   sources: [
         \     #{ name: 'foo', options: {}, params: {} },
         \   ],
         \   sourceOptions: #{
-        \     _: #{
+        \     foo: #{
         \       path: 'bar',
         \     },
         \   },
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
-        \ 'foo -source-option-path=bar'),
+        \ 'foo -source-option-foo-path=bar'),
         \ #{
         \   sources: [
         \     #{ name: 'foo', options: #{ path: 'bar' }, params: {} },
         \   ],
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
-        \ '-source-param-path=bar foo'),
+        \ '-source-param-foo-path=bar foo'),
         \ #{
         \   sources: [
         \     #{ name: 'foo', options: {}, params: {} },
         \   ],
         \   sourceParams: #{
-        \     _: #{
+        \     foo: #{
         \       path: 'bar',
         \     },
         \   },
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
-        \ 'foo -source-param-path=bar'),
+        \ 'foo -source-param-foo-path=bar'),
         \ #{
         \   sources: [
         \     #{ name: 'foo', options: {}, params: #{ path: 'bar' } },
         \   ],
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
-        \ 'foo -ui-option-foo=bar'),
+        \ 'foo -ui-option-foo-foo=bar'),
         \ #{
         \   sources: [
         \     #{ name: 'foo', options: {}, params: {} },
         \   ],
-        \   uiOptions: #{ _: #{ foo: 'bar' } },
+        \   uiOptions: #{ foo: #{ foo: 'bar' } },
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
-        \ 'foo -ui-param-foo=bar'),
+        \ 'foo -ui-param-foo-foo=bar'),
         \ #{
         \   sources: [
         \     #{ name: 'foo', options: {}, params: {} },
         \   ],
-        \   uiParams: #{ _: #{ foo: 'bar' } },
+        \   uiParams: #{ foo: #{ foo: 'bar' } },
         \ })
 
   " If omit value, v:true is used
@@ -85,11 +85,11 @@ function s:suite.parse_options_args() abort
         \   resume: v:true,
         \ })
   call s:assert.equals(ddu#commands#_parse_options_args(
-        \ 'foo -ui-param-foo'),
+        \ 'foo -ui-param-foo-foo'),
         \ #{
         \   sources: [
         \     #{ name: 'foo', options: {}, params: {} },
         \   ],
-        \   uiParams: #{ _: #{ foo: v:true } },
+        \   uiParams: #{ foo: #{ foo: v:true } },
         \ })
 endfunction
