@@ -1,7 +1,7 @@
 function ddu#commands#complete(arglead, cmdline, cursorpos) abort
   if a:arglead =~# '^-'
     " Option names completion.
-    const default_options = ddu#custom#get_default_options()
+    const default_options = s:get_default_options()
     let _ = []
 
     let _ = default_options->copy()->filter(
@@ -32,7 +32,7 @@ function ddu#commands#call(args) abort
 endfunction
 
 function ddu#commands#_parse_options_args(cmdline) abort
-  const default_options = ddu#custom#get_default_options()
+  const default_options = s:get_default_options()
 
   const types = ['ui', 'source', 'filter', 'column', 'action']
 
@@ -45,15 +45,16 @@ function ddu#commands#_parse_options_args(cmdline) abort
   let [args, options] = s:parse_options(a:cmdline)
 
   for arg in args
-    if arg =~# '^-\w\+-\%(option\|param\)-\w\+'
+    let matches = arg->matchlist('^-\(\w\+\)-\(option\|param\)-\(\w\+\)')
+    if !(matches->empty())
       " options/params
       let a = arg->substitute('^-\w\+-\w\+-', '', '')
-      let name = a->substitute('=.*$', '', '')
+      let name = matches[3]
       let value = (a =~# '=.*$') ?
           \ s:remove_quote_pairs(a[name->len() + 1 :]) : v:true
 
-      let dest = arg->matchstr('^-\zs\w\+\ze-')
-      let option_or_param = arg->matchstr('^-\w\+-\zs\%(option\|param\)')
+      let dest = matches[1]
+      let option_or_param = matches[2]
 
       if dest ==# 'source' && option_or_param ==# 'option'
             \ && name ==# 'columns'
@@ -143,7 +144,7 @@ function s:parse_options(cmdline) abort
   let args = []
   let options = {}
 
-  const default_options = ddu#custom#get_default_options()
+  const default_options = s:get_default_options()
 
   " Eval
   const cmdline = (a:cmdline =~# '\\\@<!`.*\\\@<!`') ?
@@ -209,4 +210,9 @@ function s:print_error(string, name = 'ddu') abort
   echomsg printf('[%s] %s', a:name,
         \ a:string->type() ==# v:t_string ? a:string : a:string->string())
   echohl None
+endfunction
+
+function s:get_default_options() abort
+  return '*ddu#custom#get_default_options'->exists() ?
+        \ ddu#custom#get_default_options() : {}
 endfunction
