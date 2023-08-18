@@ -39,6 +39,8 @@ function ddu#commands#_parse_options_args(cmdline) abort
   let ui_params = {}
   let source_options = {}
   let source_params = {}
+  let filter_options = {}
+  let filter_params = {}
   let [args, options] = s:parse_options(a:cmdline)
 
   for arg in args
@@ -61,8 +63,8 @@ function ddu#commands#_parse_options_args(cmdline) abort
       let value = s:convert_option_or_param(
             \ default_options, dest, option_or_param, name, value)
 
-      if dest ==# 'ui'
-        let ui_{option_or_param}s[name] = value
+      if dest ==# 'ui' || dest ==# 'filter'
+        let {dest}_{option_or_param}s[name] = value
       elseif dest ==# 'source'
         if sources->empty()
           " For global
@@ -84,22 +86,19 @@ function ddu#commands#_parse_options_args(cmdline) abort
   if !(sources->empty())
     let options.sources = sources
   endif
-  if !(source_options->empty())
-    let options.sourceOptions = #{ _: source_options }
-  endif
-  if !(source_params->empty())
-    let options.sourceParams = #{ _: source_params }
-  endif
-  if !(ui_options->empty())
-    let options.uiOptions = #{ _: ui_options }
-  endif
-  if !(ui_params->empty())
-    let options.uiParams = #{ _: ui_params }
 
-    if options->has_key('ui')
-      let options.uiParams[options.ui] = ui_params
+  for name in ['ui', 'source', 'filter']
+    if !({name}_options->empty())
+      let options[name .. 'Options'] = #{ _: {name}_options }
     endif
-  endif
+    if !({name}_params->empty())
+      let options[name .. 'Params'] = #{ _: {name}_params }
+
+      if name ==# 'ui' && options->has_key('ui')
+        let options.uiParams[options.ui] = ui_params
+      endif
+    endif
+  endfor
 
   return options
 endfunction
