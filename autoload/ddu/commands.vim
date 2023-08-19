@@ -55,7 +55,7 @@ function ddu#commands#_parse_options_args(cmdline) abort
       let name = matches[4]
 
       let a = arg->substitute('^-\w\+-\w\+-', '', '')
-      let value = (a =~# '=.*$') ? matches[5] : v:true
+      let value = (a =~# '=.*$') ? s:remove_quote_pairs(matches[5]) : v:true
 
       if type ==# 'source'
             \ && option_or_param ==# 'option'
