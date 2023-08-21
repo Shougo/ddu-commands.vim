@@ -24,7 +24,7 @@ function ddu#commands#complete(arglead, cmdline, cursorpos) abort
     let _ = s:get_available_sources()
   endif
 
-  return _->filter({ _, val -> val->stridx(a:arglead) == 0 })->sort()->uniq()
+  return _->sort()->uniq()->join("\n")
 endfunction
 
 function ddu#commands#call(args) abort
