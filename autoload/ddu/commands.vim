@@ -47,7 +47,7 @@ function ddu#commands#_parse_options_args(cmdline) abort
   for arg in args
     let matches = arg->matchlist(
           \ '^-\(\w\+\)-\(option\|param\)-\(\w\+\)-\(\w\+\)\%(=\?\(.*\)\)\?')
-    if !(matches->empty())
+    if !matches->empty()
       " options/params
       let type = matches[1]
       let option_or_param = matches[2]
@@ -67,11 +67,11 @@ function ddu#commands#_parse_options_args(cmdline) abort
       let value = s:convert_option_or_param(
             \ default_options, type, option_or_param, name, value)
 
-      if type ==# 'source' && !(sources->empty())
+      if type ==# 'source' && !sources->empty()
         " For source local
         let dest_option = {type}s[-1][option_or_param .. 's']
       else
-        if !(has_key({type}_{option_or_param}s, type_name))
+        if !has_key({type}_{option_or_param}s, type_name)
           let {type}_{option_or_param}s[type_name] = {}
         endif
         let dest_option = {type}_{option_or_param}s[type_name]
@@ -87,15 +87,15 @@ function ddu#commands#_parse_options_args(cmdline) abort
     endif
   endfor
 
-  if !(sources->empty())
+  if !sources->empty()
     let options.sources = sources
   endif
 
   for name in types
-    if !({name}_options->empty())
+    if !{name}_options->empty()
       let options[name .. 'Options'] = {name}_options
     endif
-    if !({name}_params->empty())
+    if !{name}_params->empty()
       let options[name .. 'Params'] = {name}_params
     endif
   endfor
