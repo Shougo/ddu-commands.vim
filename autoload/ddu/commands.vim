@@ -19,6 +19,9 @@ function ddu#commands#complete(arglead, cmdline, cursorpos) abort
             \ ->values()
       let _ += ['-' .. prefix .. '-option-', '-' .. prefix .. '-param-']
     endfor
+
+    " Local names
+    let _ += ddu#custom#get_names()->map({ _, val -> '-name=' .. val })
   else
     " Source name completion.
     let _ = s:get_available_sources()
