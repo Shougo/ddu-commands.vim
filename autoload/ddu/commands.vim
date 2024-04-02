@@ -37,7 +37,9 @@ endfunction
 function ddu#commands#_parse_options_args(cmdline) abort
   const default_options = s:get_default_options()
 
-  const types = ['ui', 'source', 'filter', 'column', 'action']
+  const types = [
+        \   'ui', 'source', 'filter', 'column', 'action',
+        \ ]
 
   for name in types
     let {name}_options = {}
@@ -208,8 +210,7 @@ endfunction
 
 function s:print_error(string, name = 'ddu') abort
   echohl Error
-  echomsg printf('[%s] %s', a:name,
-        \ a:string->type() ==# v:t_string ? a:string : a:string->string())
+  echomsg printf('[%s] %s', a:name, a:string->string())
   echohl None
 endfunction
 
