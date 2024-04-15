@@ -84,7 +84,7 @@ function ddu#commands#_parse_options_args(cmdline) abort
 
       let dest_option[name] = value
     elseif arg[0] ==# '-'
-      call s:print_error(printf('option "%s": is invalid.', arg))
+      call ddu#util#print_error(printf('option "%s": is invalid.', arg))
     else
       " Add source name.
       let source_name = arg->matchstr('^[^:]*')
@@ -206,12 +206,6 @@ function s:get_available_sources() abort
         \ + ddu#custom#get_source_names()
   const aliases = ddu#custom#get_alias_names('source')
   return (sources + aliases)->sort()->uniq()
-endfunction
-
-function s:print_error(string, name = 'ddu') abort
-  echohl Error
-  echomsg printf('[%s] %s', a:name, a:string->string())
-  echohl None
 endfunction
 
 function s:get_default_options() abort
