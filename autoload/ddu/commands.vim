@@ -203,8 +203,8 @@ function s:get_available_sources() abort
         \ ->globpath(&runtimepath, 1, 1)
         \ ->map({ _, val -> fnamemodify(val, ':t:r') })
         \ ->filter({ _, val -> val !=# '' })
-        \ + ddu#custom#get_source_names()
-  const aliases = ddu#custom#get_alias_names('source')
+        \ + ddu#custom#get_source_names('default')
+  const aliases = ddu#custom#get_alias_names('default', 'source')
   return (sources + aliases)->sort()->uniq()
 endfunction
 
