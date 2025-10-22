@@ -28,7 +28,7 @@ https://github.com/vim-denops/denops.vim
 
 ==============================================================================
 EXAMPLES                                               *ddu-commands-examples*
->
+>vim
 	" Use file_rec source.
 	Ddu file_rec
 	
@@ -42,7 +42,7 @@ EXAMPLES                                               *ddu-commands-examples*
 ==============================================================================
 COMMANDS                                               *ddu-commands-commands*
 
-							*:Ddu*
+                                                                        *:Ddu*
 :Ddu [{options}] {sources} [{type-options}] [{type-params}]
 		Creates a new Ddu buffer.
 		Ddu can be invoked with one or more sources. This can be
@@ -83,7 +83,7 @@ COMMANDS                                               *ddu-commands-commands*
 		You can use evaluation cmdline by ``.
 		Note: In the evaluation, The special characters(spaces,  "\")
 		are escaped automatically.
->
+>vim
         :Ddu -name=search%`bufnr('%')` line<CR>
 <
 		{options} are options for Ddu buffer: |ddu-options|
