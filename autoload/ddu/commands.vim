@@ -27,6 +27,20 @@ function ddu#commands#complete(arglead, cmdline, cursorpos) abort
     let _ = s:get_available_sources()
   endif
 
+  if stridx(a:arglead, '-path=') ==# 0
+    " Use path completion
+
+    " Extract the path prefix from `a:arglead`
+    const path_prefix = a:arglead->substitute('^-path=', '', '')
+
+    " Handle special cases: Expand `~` for home directory and process relative
+    " paths
+    const expanded_path = path_prefix->expand(v:true)
+
+    " Use `glob()` to get matching files and directories
+    return (expanded_path .. '*')->glob(v:false, v:true)
+  endif
+
   return _->sort()->uniq()
 endfunction
 
