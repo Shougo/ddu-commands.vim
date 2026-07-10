@@ -12,10 +12,12 @@ function ddu#commands#complete(arglead, cmdline, cursorpos) abort
 
     for prefix in ['action', 'column', 'filter', 'kind', 'source', 'ui']
       let _ += default_options[prefix .. 'Options']->copy()
-            \ ->filter(
-            \ { _, val -> val->type() == v:t_bool || val->type() == v:t_string })
-            \ ->map({ key, val -> '-' .. prefix .. '-option-' .. key
-            \        .. (val->type() == v:t_bool ? '' : '=') })
+            \ ->filter({ _, val ->
+            \   val->type() == v:t_bool || val->type() == v:t_string
+            \ })
+            \ ->map({ key, val ->
+            \        '-' .. prefix .. '-option-' .. key ..
+            \        (val->type() == v:t_bool ? '' : '=') })
             \ ->values()
       let _ += ['-' .. prefix .. '-option-', '-' .. prefix .. '-param-']
     endfor
@@ -27,17 +29,15 @@ function ddu#commands#complete(arglead, cmdline, cursorpos) abort
     let _ = s:get_available_sources()
   endif
 
-  if stridx(a:arglead, '-path=') ==# 0
-    " Use path completion
+  if a:arglead =~# '^-\?path='
+    " Use path completion only when completing the path value itself.
+    const before_cursor = a:cmdline[: a:cursorpos - 1]
+    if before_cursor !~# '\v(^|\s)-path=[^[:space:]]*$'
+      return _->sort()->uniq()
+    endif
 
-    " Extract the path prefix from `a:arglead`
     const path_prefix = a:arglead->substitute('^-path=', '', '')
-
-    " Handle special cases: Expand `~` for home directory and process relative
-    " paths
     const expanded_path = path_prefix->expand(v:true)
-
-    " Use `glob()` to get matching files and directories
     return (expanded_path .. '*')->glob(v:false, v:true)
   endif
 
@@ -138,15 +138,17 @@ function s:convert_option_or_param(
 
   return value
 endfunction
+
 function s:re_unquoted_match(match) abort
-  " Don't match a:match if it is located in-between unescaped single or double
-  " quotes
+  " Match `a:match` only when it is outside unescaped single/double quotes.
+  " This is used to split command line arguments safely.
   return a:match .. '\v\ze([^"' .. "'" .. '\\]*(\\.|"([^"\\]*\\.)*[^"\\]*"|'
         \ .. "'" .. '([^' .. "'" .. '\\]*\\.)*[^' .. "'" .. '\\]*' .. "'"
         \ .. '))*[^"' .. "'" .. ']*$'
 endfunction
+
 function s:remove_quote_pairs(s) abort
-  " remove leading/ending quote pairs
+  " Remove surrounding quote pairs, or unescape backslash-escaped characters.
   let s = a:s
   if s[0] ==# '"' && s[len(s) - 1] ==# '"'
     let s = s[1: len(s) - 2]
@@ -157,16 +159,18 @@ function s:remove_quote_pairs(s) abort
   endif
   return s
 endfunction
+
 function s:parse_options(cmdline) abort
   let args = []
   let options = {}
 
   const default_options = s:get_default_options()
 
-  " Eval
+  " Evaluate backtick expressions before tokenizing.
   const cmdline = (a:cmdline =~# '\\\@<!`.*\\\@<!`') ?
         \ s:eval_cmdline(a:cmdline) : a:cmdline
 
+  " Split on whitespace only when it is outside quotes.
   for s in cmdline->split(s:re_unquoted_match('\%(\\\@<!\s\)\+'))
     let arg = s->substitute('\\\( \)', '\1', 'g')
     let arg_key = arg->substitute('=\zs.*$', '', '')
@@ -175,10 +179,10 @@ function s:parse_options(cmdline) abort
       let name = arg_key->tr('-', '_')->substitute('=$', '', '')[1:]
       let value = (arg_key =~# '=$') ?
             \ s:remove_quote_pairs(arg[arg_key->len() :]) : v:true
+
       if default_options->get(name, '')->type() == v:t_bool
             \ && type(value) ==# v:t_string
             \ && (value ==# 'v:true' || value ==# 'v:false')
-        " Use boolean instead
         let value = value ==# 'v:true' ? v:true : v:false
       endif
 
@@ -190,6 +194,7 @@ function s:parse_options(cmdline) abort
 
   return [args, options]
 endfunction
+
 function s:eval_cmdline(cmdline) abort
   let cmdline = ''
   let prev_match = 0
