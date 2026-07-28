@@ -33,15 +33,15 @@ function ddu#commands#complete(arglead, cmdline, cursorpos) abort
     " Use path completion only when completing the path value itself.
     const before_cursor = a:cmdline[: a:cursorpos - 1]
     if before_cursor !~# '\v(^|\s)-path=[^[:space:]]*$'
-      return _->sort()->uniq()
+      return _->sort()->uniq()->join("\n")
     endif
 
     const path_prefix = a:arglead->substitute('^-path=', '', '')
     const expanded_path = path_prefix->expand(v:true)
-    return (expanded_path .. '*')->glob(v:false, v:true)
+    return (expanded_path .. '*')->glob(v:false, v:true)->join("\n")
   endif
 
-  return _->sort()->uniq()
+  return _->sort()->uniq()->join("\n")
 endfunction
 
 function ddu#commands#call(args) abort
