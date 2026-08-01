@@ -1,4 +1,8 @@
 function ddu#commands#complete(arglead, cmdline, cursorpos) abort
+  return s:complete_list(a:arglead, a:cmdline, a:cursorpos)
+        \ ->sort()->uniq()->join("\n")
+endfunction
+function s:complete_list(arglead, cmdline, cursorpos) abort
   if a:arglead =~# '^-'
     " Option names completion.
     const default_options = s:get_default_options()
@@ -33,15 +37,15 @@ function ddu#commands#complete(arglead, cmdline, cursorpos) abort
     " Use path completion only when completing the path value itself.
     const before_cursor = a:cmdline[: a:cursorpos - 1]
     if before_cursor !~# '\v(^|\s)-path=[^[:space:]]*$'
-      return _->sort()->uniq()->join("\n")
+      return _
     endif
 
     const path_prefix = a:arglead->substitute('^-path=', '', '')
     const expanded_path = path_prefix->expand(v:true)
-    return (expanded_path .. '*')->glob(v:false, v:true)->join("\n")
+    return (expanded_path .. '*')->glob(v:false, v:true)
   endif
 
-  return _->sort()->uniq()->join("\n")
+  return _
 endfunction
 
 function ddu#commands#call(args) abort
